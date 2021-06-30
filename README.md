@@ -26,4 +26,10 @@ In the event that one day's data has not been collected, the earnings will be ac
 - **/currency** _symbol_ - Change your currency.
 - **/workers** - List workers.
 
+## Summaries Examples
+
+![Earnings per Day](examples/bars.jpg)
+
+![Accumulated Earnings](examples/lines.jpg)
+
 **Libraries:** [Flexpool API](https://github.com/flexpool/py-flexpoolapi), [Cryptocompare](https://pypi.org/project/cryptocompare), [Pyrogram](https://github.com/pyrogram/pyrogram)
