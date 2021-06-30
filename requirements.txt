@@ -1,0 +1,6 @@
+flexpoolapi
+cryptocompare
+pyrogram
+configparser
+matplotlib
+pandas
