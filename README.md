@@ -12,9 +12,11 @@
 - Set your ZIL address in case one of your workers has it as a name, and the name that will replace it in `config.ini`
 - Run `bot.py`.
 
+The bot begins to collect data from the day it's run for the first time, it's impossible to obtain the earnings of each worker from previous days.
+
 The script **must be running all the time** to collect daily data from the Flexpool API and for the bot to receive the commands.
 
-In the event that one day's data has not been collected, the earnings will be accumulated along with those of the following day.
+In the event that one day's data has not been collected, the earnings will be accumulated along with those of the following day but won't be accurate for each worker.
 
 ## Available Commands
 
@@ -32,4 +34,4 @@ In the event that one day's data has not been collected, the earnings will be ac
 
 ![Accumulated Earnings](examples/lines.jpg)
 
-**Libraries:** [Flexpool API](https://github.com/flexpool/py-flexpoolapi), [Cryptocompare](https://pypi.org/project/cryptocompare), [Pyrogram](https://github.com/pyrogram/pyrogram)
+**Libraries:** [Flexpool API](https://github.com/flexpool/py-flexpoolapi), [Cryptocompare](https://github.com/lagerfeuer/cryptocompare), [Pyrogram](https://github.com/pyrogram/pyrogram)
