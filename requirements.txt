@@ -1,6 +1,7 @@
 flexpoolapi
 cryptocompare
 pyrogram
+tgcrypto
 configparser
 matplotlib
 pandas
