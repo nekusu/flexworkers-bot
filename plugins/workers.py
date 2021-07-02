@@ -27,6 +27,6 @@ def workers(client, message):
 			reply += "\n{}: `{:.2f}` MH/s (`{:.1f}`%)".format(worker_name, hashrate, hashrate_percentage)
 	except Exception as e:
 		print_exc()
-		reply = "An error ocurred with /estimated command:\n`{}`".format(e)
+		reply = "An error ocurred:\n`{}`".format(e)
 
 	client.edit_message_text(message.chat.id, wait_message.message_id, reply)

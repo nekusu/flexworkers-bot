@@ -21,7 +21,10 @@ def day(client, message):
 
 	try:
 		if len(message.command) > 1:
-			date = (datetime.today() - timedelta(1)).strftime('%Y-%m-%d') if date == 'yesterday' else message.command[1]
+			if message.command[1] == 'yesterday':
+				date = (datetime.today() - timedelta(1)).strftime('%Y-%m-%d')
+			else:
+				date = datetime.strptime(message.command[1], '%Y-%m-%d').strftime('%Y-%m-%d')
 
 			if os.path.isfile('earnings/{}.json'.format(date)):
 				with open('earnings/{}.json'.format(date), 'r') as earnings_file:

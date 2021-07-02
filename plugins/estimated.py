@@ -13,9 +13,12 @@ miner = flexpoolapi.miner(config['bot']['eth_address'])
 def estimated(client, message):
 	print(message.text)
 	wait_message = client.send_message(message.chat.id, "Wait a second...")
-	days = int(message.command[1]) if len(message.command) > 1 else 7
+	days = 7
 
 	try:
+		if len(message.command) > 1:
+			days = int(message.command[1])
+
 		estimated_eth = miner.estimated_daily_revenue() / pow(10, 18)
 		total_eth = estimated_eth * days
 		reply = "**Estimated for {} day{}**{}".format(days, 's' if days > 1 else '', get_earnings(total_eth))
