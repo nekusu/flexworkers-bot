@@ -9,7 +9,7 @@ config.read('config.ini')
 miner = flexpoolapi.miner(config['bot']['eth_address'])
 
 
-@Client.on_message(filters.chat(config['bot']['user']) & filters.command(['estimated', 'estimate']))
+@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command(['estimated', 'estimate']))
 def estimated(client, message):
 	print(message.text)
 	wait_message = client.send_message(message.chat.id, "Wait a second...")

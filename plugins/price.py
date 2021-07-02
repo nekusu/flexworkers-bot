@@ -6,7 +6,7 @@ config = ConfigParser()
 config.read('config.ini')
 
 
-@Client.on_message(filters.chat(config['bot']['user']) & filters.command('price'))
+@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('price'))
 def price(client, message):
 	config.read('config.ini')
 	print(message.text)

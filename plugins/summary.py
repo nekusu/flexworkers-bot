@@ -32,7 +32,7 @@ def send_graphs(data, client, chat_id):
 	client.send_photo(chat_id, 'bars.png')
 	client.send_photo(chat_id, 'lines.png')
 
-@Client.on_message(filters.chat(config['bot']['user']) & filters.command('summary'))
+@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('summary'))
 def summary(client, message):
 	print(message.text)
 	wait_message = client.send_message(message.chat.id, "Wait a second...")

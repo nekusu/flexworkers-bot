@@ -5,7 +5,7 @@ config = ConfigParser()
 config.read('config.ini')
 
 
-@Client.on_message(filters.chat(config['bot']['user']) & filters.command('help'))
+@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('help'))
 def help(client, message):
 	print(message.text)
 	reply = "**Available Commands**\

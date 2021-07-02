@@ -8,7 +8,7 @@ config.read('config.ini')
 miner = flexpoolapi.miner(config['bot']['eth_address'])
 
 
-@Client.on_message(filters.chat(config['bot']['user']) & filters.command(['workers', 'worker']))
+@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command(['workers', 'worker']))
 def workers(client, message):
 	config.read('config.ini')
 	print(message.text)

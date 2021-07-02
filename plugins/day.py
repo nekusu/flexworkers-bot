@@ -12,7 +12,7 @@ config.read('config.ini')
 miner = flexpoolapi.miner(config['bot']['eth_address'])
 
 
-@Client.on_message(filters.chat(config['bot']['user']) & filters.command('day'))
+@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('day'))
 def day(client, message):
 	config.read('config.ini')
 	print(message.text)

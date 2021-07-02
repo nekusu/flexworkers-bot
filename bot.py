@@ -40,7 +40,7 @@ def daily_earnings():
 			dump(earnings, earnings_file, indent=4)
 
 		text = get_summary(earnings, date)
-		app.send_message(config['bot']['user'], text)
+		app.send_message(int(config['bot']['chat_id']), text)
 		print("{}: Workers earnings saved successfully!".format(date))
 
 	with open('earnings/_last_day.json', 'w') as last_day_file:

@@ -8,13 +8,15 @@
 - Obtain your [Telegram API ID](https://core.telegram.org/api/obtaining_api_id).
 - Create a bot with [@BotFather](https://t.me/botfather) in Telegram.
 - Set your API ID, API Hash and the token provided by BotFather in `config.ini`.
-- Set your Telegram username or [User ID](https://t.me/getmyid_bot), Flexpool ETH address and preferred currency in `config.ini`.
-- Set your ZIL address in case one of your workers has it as a name, and the name that will replace it in `config.ini`
+- Set your [Telegram Chat ID](https://t.me/getmyid_bot), Flexpool ETH address and preferred currency in `config.ini`.
+- Set your ZIL address in case one of your workers has it as a name, and the name that will replace it in `config.ini`.
 - Run `bot.py`.
 
 The bot begins to collect data from the day it's run for the first time, it's impossible to obtain the earnings of each worker from previous days.
 
 The script **must be running all the time** to collect daily data from the Flexpool API and for the bot to receive the commands.
+
+You'll receive your earnings for the day at 00:05. You can also check all your collected earnings in the `earnings` folder.
 
 In the event that one day's data has not been collected, the earnings will be accumulated along with those of the following day but won't be accurate for each worker.
 
