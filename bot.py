@@ -4,6 +4,6 @@ from earnings import daily_earnings
 
 app = Client('flex_workbot')
 scheduler = BackgroundScheduler()
-scheduler.add_job(daily_earnings, 'cron', hour='13', minute='10', args=[app])
+scheduler.add_job(daily_earnings, 'cron', hour='0', minute='5', args=[app])
 scheduler.start()
 app.run()
