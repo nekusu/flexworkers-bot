@@ -44,7 +44,7 @@ def initialize_plot_data(total_workers):
 
 def add_workers_earnings(summary, plot_data, earnings):
 	for worker in summary['workers']:
-		if worker in earnings['workers']:
+		if earnings and worker in earnings['workers']:
 			summary['workers'][worker] += earnings['workers'][worker]
 			plot_data['bars'][worker].append(earnings['workers'][worker])
 			plot_data['lines'][worker].append(plot_data['lines'][worker][-1] + earnings['workers'][worker] if len(plot_data['lines'][worker]) > 0 else 0)
@@ -52,13 +52,16 @@ def add_workers_earnings(summary, plot_data, earnings):
 			plot_data['bars'][worker].append(0)
 			plot_data['lines'][worker].append(plot_data['lines'][worker][-1] if len(plot_data['lines'][worker]) > 0 else 0)
 
-	summary['total'] += earnings['total']
-	plot_data['lines']['Total'].append(plot_data['lines']['Total'][-1] + earnings['total'] if len(plot_data['lines']['Total']) > 0 else 0)
+	if earnings:
+		summary['total'] += earnings['total']
+		plot_data['lines']['Total'].append(plot_data['lines']['Total'][-1] + earnings['total'] if len(plot_data['lines']['Total']) > 0 else 0)
+	else:
+		plot_data['lines']['Total'].append(plot_data['lines']['Total'][-1] if len(plot_data['lines']['Total']) > 0 else 0)
 
 def generate_graph(data, type, title):
 	df = pd.DataFrame(data[type], index=[d.day for d in data['days']])
 	plot = df.plot.bar(rot=0, figsize=(10, 6), stacked=True) if type == 'bars' else df.plot.line(figsize=(10, 6))
-	plot.legend(loc='upper center', ncol=5, title='Workers')
+	plot.legend(loc='upper center', ncol=4, title='Workers')
 	plt.title('{} | {}'.format(data['days'][0].strftime('%B'), title))
 	plt.xlabel('Days')
 	plt.ylabel('ETH')
@@ -100,12 +103,10 @@ def summary(client, message):
 				with open('earnings/{}.json'.format(date), 'r') as earnings_file:
 					earnings = load(earnings_file)
 
-			if earnings:
-				add_workers_earnings(summary, plot_data, earnings)
-			else:
+			if not earnings:
 				client.send_message(message.chat.id, "No data saved on {}.".format(date))
-				plot_data['lines']['Total'].append(plot_data['lines']['Total'][-1] if len(plot_data['lines']['Total']) > 0 else 0)
 
+			add_workers_earnings(summary, plot_data, earnings)
 			plot_data['days'].append(datetime.strptime(date, '%Y-%m-%d'))
 
 			if date == end_month:
