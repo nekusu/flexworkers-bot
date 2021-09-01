@@ -1,13 +1,11 @@
-from time import sleep
-from datetime import datetime, timedelta
+from datetime import datetime
 from configparser import ConfigParser
-from pyrogram import Client, filters
 from cryptocompare import get_price
 import flexpoolapi
 
 config = ConfigParser()
 config.read('config.ini')
-miner = flexpoolapi.miner(config['bot']['eth_address'])
+miner = flexpoolapi.miner('ETH', config['bot']['eth_address'])
 
 
 def get_earnings(total_eth):
@@ -16,9 +14,9 @@ def get_earnings(total_eth):
 	total_valid_shares = miner.stats().valid_shares
 	reply = ''
 
-	for worker in reversed(miner.workers()):
-		worker_name = config['bot']['zil_worker_name'] if worker.worker_name == config['bot']['zil_address'] else worker.worker_name
-		shares_percentage = worker.stats().valid_shares / total_valid_shares * 100
+	for worker in miner.workers():
+		worker_name = config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name
+		shares_percentage = miner.stats(worker.name).valid_shares / total_valid_shares * 100
 		earnings = shares_percentage / 100 * total_eth
 		reply += "\n`{:.6f}` ETH ~ `{:>7.2f}` {} | {} (`{:.1f}`%)".format(earnings, earnings * eth_price, config['bot']['currency'], worker_name, shares_percentage)
 

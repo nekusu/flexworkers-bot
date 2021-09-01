@@ -4,6 +4,7 @@
 
 ## USAGE
 
+- Install [Python wrapper for Flexpool API v2](https://github.com/nekusu/py-flexpoolapi-v2).
 - Install required libraries using: `pip install -r requirements.txt`.
 - Obtain your [Telegram API ID](https://core.telegram.org/api/obtaining_api_id).
 - Create a bot with [@BotFather](https://t.me/botfather) in Telegram.

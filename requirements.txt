@@ -1,4 +1,3 @@
-flexpoolapi
 cryptocompare
 pyrogram
 tgcrypto

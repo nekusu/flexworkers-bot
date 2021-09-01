@@ -5,7 +5,7 @@ import flexpoolapi
 
 config = ConfigParser()
 config.read('config.ini')
-miner = flexpoolapi.miner(config['bot']['eth_address'])
+miner = flexpoolapi.miner('ETH', config['bot']['eth_address'])
 
 
 @Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command(['workers', 'worker']))
@@ -15,14 +15,12 @@ def workers(client, message):
 	wait_message = client.send_message(message.chat.id, "Wait a second...")
 
 	try:
-		effective, reported = miner.current_hashrate()
-		total_hashrate = reported / pow(1000, 2)
+		total_hashrate = miner.stats().reported_hashrate / pow(1000, 2)
 		reply = "**Workers**"
 
 		for worker in reversed(miner.workers()):
-			worker_name = config['bot']['zil_worker_name'] if worker.worker_name in config['bot']['zil_address'] else worker.worker_name
-			effective, reported = worker.current_hashrate()
-			hashrate = reported / pow(1000, 2)
+			worker_name = config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name
+			hashrate = miner.stats(worker.name).reported_hashrate / pow(1000, 2)
 			hashrate_percentage = hashrate / total_hashrate * 100
 			reply += "\n{}: `{:.2f}` MH/s (`{:.1f}`%)".format(worker_name, hashrate, hashrate_percentage)
 	except Exception as e:

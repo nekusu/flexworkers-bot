@@ -12,8 +12,8 @@ config = ConfigParser()
 
 def daily_earnings(app):
 	config.read('config.ini')
-	miner = flexpoolapi.miner(config['bot']['eth_address'])
-	total_balance = (miner.total_paid() + miner.balance()) / pow(10, 18)
+	miner = flexpoolapi.miner('ETH', config['bot']['eth_address'])
+	total_balance = (miner.payments_stats().stats.total_paid + miner.balance().balance) / pow(10, 18)
 	last_day = { 'address': config['bot']['eth_address'], 'total_balance': total_balance, 'earnings': 0.0 }
 
 	if not os.path.exists('earnings'):
@@ -30,7 +30,7 @@ def daily_earnings(app):
 		earnings = { 'workers': {}, 'total': today_earnings }
 
 		for worker in miner.workers():
-			earnings['workers'][config['bot']['zil_worker_name'] if worker.worker_name in config['bot']['zil_address'] else worker.worker_name] = worker.stats().valid_shares / total_valid_shares * today_earnings
+			earnings['workers'][config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name] = miner.stats(worker.name).valid_shares / total_valid_shares * today_earnings
 
 		date = (datetime.today() - timedelta(1)).strftime('%Y-%m-%d')
 

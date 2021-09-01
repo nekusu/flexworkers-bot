@@ -7,13 +7,11 @@ from dateutil.relativedelta import relativedelta
 from pyrogram import Client, filters
 from matplotlib import pyplot as plt
 import pandas as pd
-import flexpoolapi
 from data import get_summary
 
 config = ConfigParser()
 config.read('config.ini')
 matplotlib.style.use('seaborn-dark')
-miner = flexpoolapi.miner(config['bot']['eth_address'])
 
 
 def get_all_workers(date, end_date):

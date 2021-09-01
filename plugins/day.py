@@ -9,7 +9,7 @@ from data import get_earnings, get_summary
 
 config = ConfigParser()
 config.read('config.ini')
-miner = flexpoolapi.miner(config['bot']['eth_address'])
+miner = flexpoolapi.miner('ETH', config['bot']['eth_address'])
 
 
 @Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('day'))
@@ -38,7 +38,7 @@ def day(client, message):
 				with open('earnings/_last_day.json', 'r') as last_day_file:
 					last_day = load(last_day_file)
 
-				total_balance = (miner.total_paid() + miner.balance()) / pow(10, 18)
+				total_balance = (miner.payments_stats().stats.total_paid + miner.balance().balance) / pow(10, 18)
 				total_eth = total_balance - last_day['total_balance']
 				reply = "**Today's earnings**{}".format(get_earnings(total_eth))
 			else:
