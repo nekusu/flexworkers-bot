@@ -1,6 +1,8 @@
+flexpoolapi-v2
 cryptocompare
 pyrogram
 tgcrypto
 configparser
 matplotlib
 pandas
+apscheduler
