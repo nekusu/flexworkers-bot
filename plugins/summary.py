@@ -1,16 +1,13 @@
+from shared import config, get_summary
 from traceback import print_exc
 import os, matplotlib
 from json import load
-from configparser import ConfigParser
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from pyrogram import Client, filters
 from matplotlib import pyplot as plt
 import pandas as pd
-from data import get_summary
 
-config = ConfigParser()
-config.read('config.ini')
 matplotlib.style.use('seaborn-dark')
 
 
@@ -18,8 +15,8 @@ def get_all_workers(date, end_date):
 	workers = []
 
 	while date <= end_date:
-		if os.path.isfile('earnings/{}.json'.format(date)):
-			with open('earnings/{}.json'.format(date), 'r') as earnings_file:
+		if os.path.isfile(f'earnings/{date}.json'):
+			with open(f'earnings/{date}.json', 'r') as earnings_file:
 				earnings = load(earnings_file)
 
 			for worker in earnings['workers']:
@@ -42,25 +39,31 @@ def initialize_plot_data(total_workers):
 
 def add_workers_earnings(summary, plot_data, earnings):
 	for worker in summary['workers']:
+		worker_bars = plot_data['bars'][worker]
+		worker_lines = plot_data['lines'][worker]
+
 		if earnings and worker in earnings['workers']:
-			summary['workers'][worker] += earnings['workers'][worker]
-			plot_data['bars'][worker].append(earnings['workers'][worker])
-			plot_data['lines'][worker].append(plot_data['lines'][worker][-1] + earnings['workers'][worker] if len(plot_data['lines'][worker]) > 0 else 0)
+			worker_earnings = earnings['workers'][worker]
+			summary['workers'][worker] += worker_earnings
+			worker_bars.append(worker_earnings)
+			worker_lines.append(worker_lines[-1] + worker_earnings if len(worker_lines) > 0 else 0)
 		else:
-			plot_data['bars'][worker].append(0)
-			plot_data['lines'][worker].append(plot_data['lines'][worker][-1] if len(plot_data['lines'][worker]) > 0 else 0)
+			worker_bars.append(0)
+			worker_lines.append(worker_lines[-1] if len(worker_lines) > 0 else 0)
+
+	total_lines = plot_data['lines']['Total']
 
 	if earnings:
 		summary['total'] += earnings['total']
-		plot_data['lines']['Total'].append(plot_data['lines']['Total'][-1] + earnings['total'] if len(plot_data['lines']['Total']) > 0 else 0)
+		total_lines.append(total_lines[-1] + earnings['total'] if len(total_lines) > 0 else 0)
 	else:
-		plot_data['lines']['Total'].append(plot_data['lines']['Total'][-1] if len(plot_data['lines']['Total']) > 0 else 0)
+		total_lines.append(total_lines[-1] if len(total_lines) > 0 else 0)
 
 def generate_graph(data, type, title):
 	df = pd.DataFrame(data[type], index=[d.day for d in data['days']])
 	plot = df.plot.bar(rot=0, figsize=(10, 6), stacked=True) if type == 'bars' else df.plot.line(figsize=(10, 6))
 	plot.legend(loc='upper center', ncol=4, title='Workers')
-	plt.title('{} | {}'.format(data['days'][0].strftime('%B'), title))
+	plt.title(f"{data['days'][0].strftime('%B')} | {title}")
 	plt.xlabel('Days')
 	plt.ylabel('ETH')
 	fig = plot.get_figure()
@@ -72,10 +75,10 @@ def send_graphs(data, client, chat_id):
 	client.send_photo(chat_id, 'bars.png')
 	client.send_photo(chat_id, 'lines.png')
 
-@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('summary'))
+@Client.on_message(filters.chat(int(config()['bot']['chat_id'])) & filters.command('summary'))
 def summary(client, message):
 	print(message.text)
-	wait_message = client.send_message(message.chat.id, "Wait a second...")
+	wait_message = client.send_message(message.chat.id, 'Wait a second...')
 	start_date = datetime.today().replace(day=1, month=datetime.today().month + (-1 if datetime.today().day == 1 else 0)).strftime('%Y-%m-%d')
 	end_date = (datetime.today() - timedelta(1)).strftime('%Y-%m-%d')
 
@@ -97,12 +100,12 @@ def summary(client, message):
 			end_month = (datetime.strptime(date, '%Y-%m-%d') + relativedelta(day=31)).strftime('%Y-%m-%d')
 			earnings = None
 
-			if os.path.isfile('earnings/{}.json'.format(date)):
-				with open('earnings/{}.json'.format(date), 'r') as earnings_file:
+			if os.path.isfile(f'earnings/{date}.json'):
+				with open(f'earnings/{date}.json', 'r') as earnings_file:
 					earnings = load(earnings_file)
 
 			if not earnings:
-				client.send_message(message.chat.id, "No data saved on {}.".format(date))
+				client.send_message(message.chat.id, f'No data saved on {date}.')
 
 			add_workers_earnings(summary, plot_data, earnings)
 			plot_data['days'].append(datetime.strptime(date, '%Y-%m-%d'))
@@ -119,6 +122,6 @@ def summary(client, message):
 		reply = get_summary(summary, start_date, end_date)
 	except Exception as e:
 		print_exc()
-		reply = "An error ocurred:\n`{}`".format(e)
+		reply = f'An error ocurred:\n`{e}`'
 
 	client.edit_message_text(message.chat.id, wait_message.message_id, reply)

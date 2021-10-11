@@ -1,22 +1,18 @@
+from shared import config, get_earnings, get_summary
 from traceback import print_exc
 import os
 from json import load
-from configparser import ConfigParser
 from datetime import datetime, timedelta
 from pyrogram import Client, filters
 import flexpoolapi
-from data import get_earnings, get_summary
-
-config = ConfigParser()
-config.read('config.ini')
-miner = flexpoolapi.miner('ETH', config['bot']['eth_address'])
 
 
-@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('day'))
+@Client.on_message(filters.chat(int(config()['bot']['chat_id'])) & filters.command('day'))
 def day(client, message):
-	config.read('config.ini')
 	print(message.text)
-	wait_message = client.send_message(message.chat.id, "Wait a second...")
+	cfg = config()['bot']
+	miner = flexpoolapi.miner('ETH', cfg['eth_address'])
+	wait_message = client.send_message(message.chat.id, 'Wait a second...')
 	date = datetime.today()
 
 	try:
@@ -26,13 +22,13 @@ def day(client, message):
 			else:
 				date = datetime.strptime(message.command[1], '%Y-%m-%d').strftime('%Y-%m-%d')
 
-			if os.path.isfile('earnings/{}.json'.format(date)):
-				with open('earnings/{}.json'.format(date), 'r') as earnings_file:
+			if os.path.isfile(f'earnings/{date}.json'):
+				with open(f'earnings/{date}.json', 'r') as earnings_file:
 					earnings = load(earnings_file)
 
 				reply = get_summary(earnings, date)
 			else:
-				reply = "No data saved on {}.".format(date)
+				reply = f'No data saved on {date}.'
 		else:
 			if os.path.exists('earnings/_last_day.json'):
 				with open('earnings/_last_day.json', 'r') as last_day_file:
@@ -40,11 +36,11 @@ def day(client, message):
 
 				total_balance = (miner.payments_stats().stats.total_paid + miner.balance().balance) / pow(10, 18)
 				total_eth = total_balance - last_day['total_balance']
-				reply = "**Today's earnings**{}".format(get_earnings(total_eth))
+				reply = f"Address: `{cfg['eth_address']}`\n\n**Today's earnings**{get_earnings(total_eth)}"
 			else:
-				reply = "No data stored for address `{}`.".format(config['bot']['eth_address'])
+				reply = f"No data stored for address `{cfg['eth_address']}`."
 	except Exception as e:
 		print_exc()
-		reply = "An error ocurred:\n`{}`".format(e)
+		reply = f'An error ocurred:\n`{e}`'
 
 	client.edit_message_text(message.chat.id, wait_message.message_id, reply)

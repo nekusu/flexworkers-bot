@@ -1,11 +1,8 @@
-from configparser import ConfigParser
+from shared import config
 from pyrogram import Client, filters
 
-config = ConfigParser()
-config.read('config.ini')
 
-
-@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('help'))
+@Client.on_message(filters.chat(int(config()['bot']['chat_id'])) & filters.command('help'))
 def help(client, message):
 	print(message.text)
 	reply = "**Available Commands**\

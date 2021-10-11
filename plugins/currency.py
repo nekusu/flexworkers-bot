@@ -1,31 +1,24 @@
-from configparser import ConfigParser
+from shared import config, save_config
 from pyrogram import Client, filters
 from cryptocompare import get_price
 
-config = ConfigParser()
-config.read('config.ini')
 
-
-@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command('currency'))
+@Client.on_message(filters.chat(int(config()['bot']['chat_id'])) & filters.command('currency'))
 def currency(client, message):
-	config.read('config.ini')
 	print(message.text)
-	wait_message = client.send_message(message.chat.id, "Wait a second...")
+	cfg = config()['bot']
+	wait_message = client.send_message(message.chat.id, 'Wait a second...')
 	currency = message.command[1].upper() if len(message.command) > 1 else ''
 
 	if currency:
 		try:
 			get_price('ETH', currency=currency)['ETH']
-			config['bot']['currency'] = currency
-
-			with open('config.ini', 'w') as config_file:
-				config.write(config_file)
-
-			reply = "Symbol changed to {} successfully.".format(currency)
+			save_config('currency', currency)
+			reply = f'Symbol changed to {currency} successfully.'
 		except Exception as e:
 			print(e)
-			reply = "{} is not available.".format(currency)
+			reply = f'{currency} is not available.'
 	else:
-		reply = "Current symbol: {}.".format(config['bot']['currency'])
+		reply = f"Current symbol: {cfg['currency']}."
 
 	client.edit_message_text(message.chat.id, wait_message.message_id, reply, disable_web_page_preview=True)

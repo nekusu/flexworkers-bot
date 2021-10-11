@@ -1,30 +1,31 @@
+from shared import config, share
 from traceback import print_exc
-from configparser import ConfigParser
 from pyrogram import Client, filters
 import flexpoolapi
-
-config = ConfigParser()
-config.read('config.ini')
-miner = flexpoolapi.miner('ETH', config['bot']['eth_address'])
+from flexpoolapi.utils import format_hashrate
 
 
-@Client.on_message(filters.chat(int(config['bot']['chat_id'])) & filters.command(['workers', 'worker']))
+@Client.on_message(filters.chat(int(config()['bot']['chat_id'])) & filters.command(['workers', 'worker']))
 def workers(client, message):
-	config.read('config.ini')
 	print(message.text)
+	cfg = config()['bot']
+	miner = flexpoolapi.miner('ETH', cfg['eth_address'])
 	wait_message = client.send_message(message.chat.id, "Wait a second...")
 
 	try:
-		total_hashrate = miner.stats().reported_hashrate / pow(1000, 2)
-		reply = "**Workers**"
+		stats = miner.stats()
+		total_hashrate = format_hashrate(stats.average_effective_hashrate, 'eth')
+		total_shares = stats.valid_shares
+		reply = f"Address: `{cfg['eth_address']}`\n\n**Workers** __(last 24h)__"
 
-		for worker in reversed(miner.workers()):
-			worker_name = config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name
-			hashrate = worker.reported_hashrate / pow(1000, 2)
-			hashrate_percentage = hashrate / total_hashrate * 100
-			reply += "\n{}: `{:.2f}` MH/s (`{:.1f}`%)".format(worker_name, hashrate, hashrate_percentage)
+		for worker in miner.workers():
+			hashrate = format_hashrate(worker.average_effective_hashrate, 'eth')
+			hashrate_percentage = worker.average_effective_hashrate / stats.average_effective_hashrate * 100
+			reply += f'\n`{hashrate:>10}` ~ `{worker.valid_shares:>5}` shares > {share(worker.name, hashrate_percentage)}'
+
+		reply += f'\n`{total_hashrate:>10}` ~ `{total_shares:>5}` shares > Total'
 	except Exception as e:
 		print_exc()
-		reply = "An error ocurred:\n`{}`".format(e)
+		reply = f'An error ocurred:\n`{e}`'
 
 	client.edit_message_text(message.chat.id, wait_message.message_id, reply)
