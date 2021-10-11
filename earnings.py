@@ -30,7 +30,7 @@ def daily_earnings(app):
 		earnings = { 'workers': {}, 'total': today_earnings }
 
 		for worker in miner.workers():
-			earnings['workers'][config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name] = miner.stats(worker.name).valid_shares / total_valid_shares * today_earnings
+			earnings['workers'][config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name] = worker.valid_shares / total_valid_shares * today_earnings
 
 		date = (datetime.today() - timedelta(1)).strftime('%Y-%m-%d')
 

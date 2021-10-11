@@ -16,7 +16,7 @@ def get_earnings(total_eth):
 
 	for worker in miner.workers():
 		worker_name = config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name
-		shares_percentage = miner.stats(worker.name).valid_shares / total_valid_shares * 100
+		shares_percentage = worker.valid_shares / total_valid_shares * 100
 		earnings = shares_percentage / 100 * total_eth
 		reply += "\n`{:.6f}` ETH ~ `{:>7.2f}` {} | {} (`{:.1f}`%)".format(earnings, earnings * eth_price, config['bot']['currency'], worker_name, shares_percentage)
 

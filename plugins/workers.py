@@ -20,7 +20,7 @@ def workers(client, message):
 
 		for worker in reversed(miner.workers()):
 			worker_name = config['bot']['zil_worker_name'] if worker.name in config['bot']['zil_address'] else worker.name
-			hashrate = miner.stats(worker.name).reported_hashrate / pow(1000, 2)
+			hashrate = worker.reported_hashrate / pow(1000, 2)
 			hashrate_percentage = hashrate / total_hashrate * 100
 			reply += "\n{}: `{:.2f}` MH/s (`{:.1f}`%)".format(worker_name, hashrate, hashrate_percentage)
 	except Exception as e:
