@@ -42,6 +42,7 @@ def get_summary(earnings, start_date='', end_date=''):
 	start_date = datetime.strptime(start_date, '%Y-%m-%d')
 	reply = f"Address: `{cfg['eth_address']}`\n"
 	reply += f"\n**{start_date.strftime('%d %B %Y')}**"
+	days_difference = 0
 
 	if end_date:
 		end_date = datetime.strptime(end_date, '%Y-%m-%d')

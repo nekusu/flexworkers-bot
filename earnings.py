@@ -27,7 +27,7 @@ def daily_earnings(app):
 		earnings = { 'workers': {}, 'total': today_earnings, 'total_balance': total_balance }
 
 		for worker in miner.workers():
-			earnings[worker.name] = worker.valid_shares / total_valid_shares * today_earnings
+			earnings['workers'][worker.name] = worker.valid_shares / total_valid_shares * today_earnings
 
 		date = (datetime.today() - timedelta(1)).strftime('%Y-%m-%d')
 
